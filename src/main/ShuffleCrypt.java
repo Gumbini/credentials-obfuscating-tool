@@ -98,7 +98,7 @@ public final class ShuffleCrypt {
         data.append("#include <stdint.h>");
         data.append(LN);
         data.append(LN);
-        data.append("static constexpr uint8_t data[] = {");
+        data.append("static constexpr uint8_t encData[] = {");
         data.append(LN);
         data.append('\t');
 
@@ -108,7 +108,7 @@ public final class ShuffleCrypt {
             data.append(String.format("0x%02X", b));
             //data.append((char) b);
             data.append(",");
-            if (++i == 10) {
+            if (++i == 8) {
                 data.append(LN);
                 data.append('\t');
                 i = 0;
@@ -122,6 +122,7 @@ public final class ShuffleCrypt {
         data.append(LN);
         data.append(LN);
         data.append("#endif // DATA_HPP");
+        data.append(LN);
 
         return data.toString();
     }
