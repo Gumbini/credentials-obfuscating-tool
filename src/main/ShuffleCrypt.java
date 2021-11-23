@@ -1,5 +1,6 @@
 package main;
 
+import util.CircularShifts;
 import util.SimplifiedSecureRandom;
 
 import java.util.*;
@@ -15,8 +16,8 @@ public final class ShuffleCrypt {
 
     /**
      * Construct a {@code List} of {@code byte}s which contains metadata about character position and the characters themselves.
-     * {@code List Structure: [chars offset, string0 offset, ..., stringN offset, string0 length, string0 idx0, ..., string0 idxN,
-     * ..., stringN length, stringN idx0, ..., stringN idxN, char0, ..., charN]}
+     * <br> {@code List Structure: [chars offset, string0 offset, ..., stringN offset, string0 length, string0 idx0, ..., string0
+     * idxN, ..., stringN length, stringN idx0, ..., stringN idxN, char0, ..., charN]}
      *
      * @param shuffledChars a <b>duplicate-free</b> {@link List} containing all {@link Character}s <b>preferably unsorted!</b>
      * @param strings       the {@link String}s which should be encrypted
@@ -104,7 +105,7 @@ public final class ShuffleCrypt {
 
         int i = 0;
         while (byteList.size() > 0) {
-            byte b = byteList.remove(0);
+            byte b = CircularShifts.srlC(byteList.remove(0), 3);
             data.append(String.format("0x%02X", b));
             //data.append((char) b);
             data.append(",");
