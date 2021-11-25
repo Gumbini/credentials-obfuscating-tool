@@ -91,15 +91,15 @@ public final class ShuffleCrypt {
 
         data.append("#pragma once");
         data.append(LN);
-        data.append("#ifndef DATA_HPP");
+        data.append("#ifndef ENCRYPTED_DATA_HPP");
         data.append(LN);
-        data.append("#define DATA_HPP");
+        data.append("#define ENCRYPTED_DATA_HPP");
         data.append(LN);
         data.append(LN);
         data.append("#include <stdint.h>");
         data.append(LN);
         data.append(LN);
-        data.append("static constexpr uint8_t encData[] = {");
+        data.append("static constexpr uint8_t encryptedField[] = {");
         data.append(LN);
         data.append('\t');
 
@@ -122,7 +122,7 @@ public final class ShuffleCrypt {
         data.append("};");
         data.append(LN);
         data.append(LN);
-        data.append("#endif // DATA_HPP");
+        data.append("#endif // ENCRYPTED_DATA_HPP");
         data.append(LN);
 
         return data.toString();
