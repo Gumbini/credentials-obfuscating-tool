@@ -5,25 +5,25 @@ import util.SimplifiedSecureRandom;
 
 import java.util.*;
 
-public final class ShuffleCrypt {
+public final class Obfuscator {
     public static final String LN = System.lineSeparator();
 
     /**
      * Dummy constructor: This is a utility class which should not be instantiated.
      */
-    private ShuffleCrypt() {
+    private Obfuscator() {
     }
 
     /**
      * Construct a {@code List} of {@code byte}s which contains metadata about character position and the characters themselves.
-     * <br> {@code List Structure: [chars offset, string0 offset, ..., stringN offset, string0 length, string0 idx0, ..., string0
+     * <br> {@code Structure of the return List: [chars offset, string0 offset, ..., stringN offset, string0 length, string0 idx0, ..., string0
      * idxN, ..., stringN length, stringN idx0, ..., stringN idxN, char0, ..., charN]}
      *
      * @param shuffledChars a <b>duplicate-free</b> {@link List} containing all {@link Character}s <b>preferably unsorted!</b>
      * @param strings       the {@link String}s which should be encrypted
      * @return a {@link List} containing metadata about character position and the characters themselves
      */
-    public static List<Byte> constructByteList(List<Character> shuffledChars, String... strings) {
+    public static List<Byte> constructByteList(List<Byte> shuffledChars, String... strings) {
         List<Byte> byteList = new ArrayList<>();
         Stack<Integer> offsets = new Stack<>();
 
@@ -38,9 +38,7 @@ public final class ShuffleCrypt {
         }
 
         int charsOffset = byteList.size();
-        for (char c : shuffledChars) {
-            byteList.add((byte) c);
-        }
+        byteList.addAll(shuffledChars);
 
         int elementsBeforeIdx = strings.length + 1;
 
@@ -81,7 +79,7 @@ public final class ShuffleCrypt {
     }
 
     /**
-     * Builds a {@code static constexpr uint8_t data[]} containing all {@code byte}s from the given List in that order.
+     * Builds a {@code constexpr uint8_t data[]} array containing all {@code byte}s from the given List in that order.
      *
      * @param byteList a {@link List} which contains {@link Byte}s
      * @return a {@link String} representing the given {@code byte}s in a C++ suitable {@code constexpr}-form
@@ -91,27 +89,33 @@ public final class ShuffleCrypt {
 
         data.append("#pragma once");
         data.append(LN);
-        data.append("#ifndef ENCRYPTED_DATA_HPP");
+        data.append("#ifndef OBFUSCATED_DATA_HPP");
         data.append(LN);
-        data.append("#define ENCRYPTED_DATA_HPP");
-        data.append(LN);
-        data.append(LN);
-        data.append("#include <stdint.h>");
+        data.append("#define OBFUSCATED_DATA_HPP");
         data.append(LN);
         data.append(LN);
-        data.append("static constexpr uint8_t encryptedField[] = {");
+        data.append("#include <climits> // for CHAR_BIT");
         data.append(LN);
-        data.append('\t');
+        data.append("#include <cstdint> // for uint8_t");
+        data.append(LN);
+        data.append(LN);
+        data.append("static_assert(CHAR_BIT == 8, \"Proper deobfuscation can only be guaranteed with 8-bit characters!\");");
+        data.append(LN);
+        data.append(LN);
+        data.append("namespace ObfuscatedCredentials {");
+        data.append(LN);
+        data.append("\tconstexpr uint8_t data[] = {");
+        data.append(LN);
+        data.append("\t\t");
 
         int i = 0;
         while (byteList.size() > 0) {
             byte b = CircularShifts.srlC(byteList.remove(0), 3);
             data.append(String.format("0x%02X", b));
-            //data.append((char) b);
             data.append(",");
             if (++i == 8) {
                 data.append(LN);
-                data.append('\t');
+                data.append("\t\t");
                 i = 0;
                 continue;
             }
@@ -119,14 +123,14 @@ public final class ShuffleCrypt {
         }
         data.reverse().delete(0, 2).reverse();
         data.append(LN);
+        data.append("\t};");
+        data.append(LN);
         data.append("};");
         data.append(LN);
         data.append(LN);
-        data.append("#endif // ENCRYPTED_DATA_HPP");
+        data.append("#endif // OBFUSCATED_DATA_HPP");
         data.append(LN);
 
         return data.toString();
     }
-
-
 }
