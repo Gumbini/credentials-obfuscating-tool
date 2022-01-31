@@ -4,6 +4,7 @@ import util.CircularShifts;
 import util.SimplifiedSecureRandom;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class Obfuscator {
     public static final String LN = System.lineSeparator();
@@ -61,7 +62,7 @@ public final class Obfuscator {
         data.append(LN);
         data.append("\t};");
         data.append(LN);
-        data.append("};");
+        data.append("}");
         data.append(LN);
         data.append(LN);
         data.append("#endif // OBFUSCATED_DATA_HPP");
@@ -73,38 +74,43 @@ public final class Obfuscator {
     /**
      * Construct a {@code List} of {@code byte}s which contains metadata about character position and the characters themselves.
      * <br> {@code Structure of the return List: [chars offset, string0 offset, ..., stringN offset, string0 length, string0
-     * idx0,
-     * ..., string0 idxN, ..., stringN length, stringN idx0, ..., stringN idxN, char0, ..., charN]}
+     * idx0, ..., string0 idxN, ..., stringN length, stringN idx0, ..., stringN idxN, char0, ..., charN]}
      *
      * @param shuffledChars a <b>duplicate-free</b> {@link List} containing all {@link Character}s <b>preferably unsorted!</b>
      * @param strings       the {@link String}s which should be encrypted
      * @return a {@link List} containing metadata about character position and the characters themselves
      */
     public static List<Byte> constructByteList(List<Byte> shuffledChars, String... strings) {
-        List<Byte> byteList = new ArrayList<>();
+        List<Integer> byteList = new ArrayList<>();
         Stack<Integer> offsets = new Stack<>();
 
         for (String s : strings) {
             offsets.push(byteList.size());
-            byteList.add((byte) s.length());
+            byteList.add(s.length());
             char[] chars = s.toCharArray();
             for (char c : chars) {
-                int idx = shuffledChars.indexOf(c);
-                byteList.add((byte) idx);
+                int idx = shuffledChars.indexOf((byte) c);
+                byteList.add(idx);
             }
         }
 
         int charsOffset = byteList.size();
-        byteList.addAll(shuffledChars);
+        byteList.addAll(shuffledChars.stream().map(Byte::intValue).collect(Collectors.toList()));
 
         int elementsBeforeIdx = strings.length + 1;
 
         for (int i = 0; i < strings.length; i++) {
-            byteList.add(0, (byte) (offsets.pop() + elementsBeforeIdx));
+            byteList.add(0, offsets.pop() + elementsBeforeIdx);
         }
-        byteList.add(0, (byte) (charsOffset + elementsBeforeIdx));
+        byteList.add(0, charsOffset + elementsBeforeIdx);
 
-        return byteList;
+        byteList.forEach(b -> {
+            if (b > 0xFF) {
+                throw new RuntimeException("Number " + b + " is not representable with 8 bits!");
+            }
+        });
+
+        return byteList.stream().map(Integer::byteValue).collect(Collectors.toList());
     }
 
     /**
