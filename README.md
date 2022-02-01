@@ -1,4 +1,4 @@
-# Credentials Obfuscator
+# Credentials Obfuscating Tool
 This program obfuscates (not encrypts!) access credentials (such as a WiFi password and SSID) for use on microcontrollers.
 It creates data for a C++ header on standard output.
 
@@ -16,7 +16,7 @@ The following was intended as an area of application:
 - Compile the code
 
 **Recommended if you were redirected to this repository from one of my other projects:**
-use the prebuilt [JAR archive](https://github.com/Gumbini/credentials-obfuscator/releases)
+use the prebuilt [JAR archive](https://github.com/Gumbini/credentials-obfuscating-tool/releases)
 
 ## Usage
 
@@ -60,7 +60,7 @@ If you run the example yourself, you'll notice that the data in the array is dif
 ## Deobfuscation
 
 For deobfuscating on the microcontroller (e.g. an ESP32) use the
-[Credentials Deobfuscation Library](https://github.com/Gumbini/credentials-deobfuscating-lib) which is written in C++.
+[Credentials Deobfuscation Library](https://github.com/Gumbini/credentials-deobfuscation-lib) which is written in C++.
 
 ## How does it work?
 
